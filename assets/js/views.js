@@ -10,7 +10,6 @@ const tradeshowList = document.getElementById('tradeshow-buttons_wrapper');
 
 function checkSticky() {
   const stickyTop = tradeshowList.getBoundingClientRect().top + window.scrollY; 
-  console.log(stickyTop);
   if (window.scrollY + 32 >= stickyTop) {
     tradeshowList.classList.add('active');
   } else {
