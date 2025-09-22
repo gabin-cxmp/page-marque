@@ -219,7 +219,10 @@ legend{
 }
 
 #tradeshow-buttons_wrapper.active{
-  border: 1px solid #C6C6C6;
+  border: 1px solid white;
+  backdrop-filter: blur(3px);
+  box-shadow: 0px 3px 12px -4px rgba(0,0,0, 0.15);
+  background-color: rgba(255,255,255, 0.75);
 }
 
 .content-container{
@@ -724,9 +727,6 @@ footer {
 
   .checkbox-container{
     justify-content: flex-start;
-    background-color: #E0E4FF;
-    border-radius: 4px;
-    padding: 4px 8px;
   }
 
   .searchbar-list_wrapper{
