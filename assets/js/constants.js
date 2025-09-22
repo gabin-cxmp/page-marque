@@ -1,6 +1,6 @@
 // Configurations et éléments DOM
 export const CONFIG = {
-  itemsPerPage: 12,
+  itemsPerPage: 20,
   csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSlbeaP2ujP_rZSxXWc0fyg2bvpten6bIq-5ZyGh7kjkdl52aN3vldcSQG482a2fToH4a0Qg7nN0-gL/pub?output=csv"
 };
 
@@ -22,32 +22,33 @@ export const DOM = {
   microviewTitle: document.getElementById('microview-title'),
   microviewStand: document.getElementById('microview-stand'),
   microviewCountry: document.getElementById('microview-country'),
-  microviewFocus: document.getElementById('microview-focus'),
   microviewCategory: document.getElementById('microview-category'),
-  microviewSpan: document.getElementById('microview-span'),
-  microviewContactButton: document.getElementById('microview-contact_button'),
-  certificationsList: document.getElementById('certifications-list'),
-  madeInContainer : document.querySelector('#made-in-fieldset'),
+  microviewSociete: document.getElementById('microview-societe'),
+  microviewTradeshow: document.getElementById('microview-tradeshow'),
+  microviewDescription: document.getElementById('microview_description'),
+  microviewAsk : document.getElementById('microview-aks'),
+  microviewWebsite : document.getElementById('microview-website'),
+  microviewInstagram : document.getElementById('microview-instagram')
 };
 
 
 export const FILTER_CONFIG = {
   pays: {
-    legend: 'Pays',
+    legend: 'Tous les pays',
     fieldName: 'Supplier Country',
     type: 'direct',
     possibleValues: []
   },
   category: {
-    legend: 'Categories',
+    legend: 'Toutes les categories',
     fieldName: 'Category',
     type: 'direct',
-    possibleValues: [] // Sera rempli dynamiquement
+    possibleValues: [] 
   },
   sector: {
-    legend: 'Secteurs',
+    legend: 'Tous les secteurs',
     fieldName: 'Supplier Sector',
     type: 'direct',
-    possibleValues: [] // Sera rempli dynamiquement
+    possibleValues: []
   }
 };

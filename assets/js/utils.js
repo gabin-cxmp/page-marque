@@ -19,8 +19,6 @@ export const getUrlParam = (param) =>
 
 // ----------------- FILTRES -----------------
 export const generateAllFilters = (filtersContainer) => {
-  filtersContainer.innerHTML = '';
-
   Object.entries(FILTER_CONFIG).forEach(([filterKey, config]) => {
     const opts = getAvailableOptionsForFilter(config.fieldName);
     if (opts.length) filtersContainer.appendChild(createDropdownFilter(filterKey, config, opts));
@@ -41,7 +39,6 @@ export const getAvailableOptionsForFilter = (fieldName) => {
 // ----------------- DROPDOWN -----------------
 export const createDropdownFilter = (filterKey, config, options) => {
   const container = el('div', { class: 'custom-dropdown_container', 'data-filter': filterKey }, [
-    el('label', { class: 'dropdown-label' }, config.legend),
     el('div', { class: 'custom-dropdown' }, [
       el('div', {
         class: 'dropdown-button',
@@ -51,14 +48,14 @@ export const createDropdownFilter = (filterKey, config, options) => {
         'aria-expanded': 'false'
       }, [
         el('span', { class: 'selected-text' }, `${config.legend}`),
-        el('span', { class: 'dropdown-arrow' }, '▼')
+        el('img', { class: 'dropdown-arrow', src: '/assets/img/chevron-down.svg' })
       ]),
       el('ul', { class: 'dropdown-options', role: 'listbox', style: 'display:none' }, [
         el('li', {
           class: 'dropdown-option selected',
           role: 'option',
           'data-value': ''
-        }, config.legend == 'Category' ? 'Toutes les ' + config.legend.toLowerCase() : 'Tous les ' + config.legend.toLowerCase()),
+        }, config.legend),
         ...options.map((o) =>
           el('li', { class: 'dropdown-option', role: 'option', 'data-value': o }, o)
         )
@@ -86,45 +83,68 @@ export const setupDropdownEvents = (container) => {
   const text = container.querySelector('.selected-text');
   const arrow = container.querySelector('.dropdown-arrow');
   const hidden = container.querySelector('input[type=hidden]');
-  let isOpen = false;
+  const dropdown = container.querySelector('.custom-dropdown');
 
   const open = () => {
-    if (isOpen) return;
-    document.querySelectorAll('.custom-dropdown.open').forEach((d) => close(d));
-    isOpen = true;
-    list.style.display = 'block';
-    btn.setAttribute('aria-expanded', 'true');
-    arrow.style.transform = 'rotate(180deg)';
-    container.querySelector('.custom-dropdown').classList.add('open');
-  };
+  document.querySelectorAll('.custom-dropdown.open').forEach((d) => {
+    if (!container.contains(d)) {
+      d.classList.remove('open');
+      d.querySelector('.dropdown-options').style.display = 'none';
+      d.querySelector('.dropdown-button').setAttribute('aria-expanded', 'false');
+      d.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)';
+    }
+  });
 
-  const close = (target = container.querySelector('.custom-dropdown')) => {
-    isOpen = false;
-    target.querySelector('.dropdown-options').style.display = 'none';
-    target.querySelector('.dropdown-button').setAttribute('aria-expanded', 'false');
-    target.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)';
-    target.classList.remove('open');
+  const hiddenValue = hidden.value;
+
+  list.querySelectorAll('.dropdown-option').forEach((opt) => {
+    if (opt.dataset.value === "") {
+      opt.style.display = hiddenValue ? "block" : "none";
+    } else if (opt.dataset.value === hiddenValue) {
+      opt.style.display = "none";
+    } else {
+      opt.style.display = "block";
+    }
+  });
+
+  dropdown.classList.add('open');
+  list.style.display = 'block';
+  btn.setAttribute('aria-expanded', 'true');
+  arrow.style.transform = 'rotate(180deg)';
+};
+
+  const close = () => {
+    dropdown.classList.remove('open');
+    list.style.display = 'none';
+    btn.setAttribute('aria-expanded', 'false');
+    arrow.style.transform = 'rotate(0deg)';
   };
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    isOpen ? close() : open();
+    dropdown.classList.contains('open') ? close() : open();
   });
 
   btn.addEventListener('keydown', (e) => {
     if (['Enter', ' '].includes(e.key)) {
       e.preventDefault();
-      isOpen ? close() : open();
+      dropdown.classList.contains('open') ? close() : open();
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       open();
+      list.querySelector('.dropdown-option')?.focus();
     }
   });
 
   list.addEventListener('click', (e) => {
+    e.stopPropagation(); 
     if (e.target.classList.contains('dropdown-option')) {
       text.textContent = e.target.textContent;
       hidden.value = e.target.dataset.value;
+
+      if (hidden.value) text.classList.add('has-value');
+      else text.classList.remove('has-value');
+
       list.querySelectorAll('.dropdown-option').forEach((o) => o.classList.remove('selected'));
       e.target.classList.add('selected');
       close();
@@ -150,7 +170,9 @@ export const setupDropdownEvents = (container) => {
     }
   });
 
-  document.addEventListener('click', (e) => !container.contains(e.target) && close());
+  document.addEventListener('click', () => {
+    close();
+  });
 };
 
 // ----------------- CHECKBOX -----------------
@@ -173,9 +195,8 @@ export const createNouveautesCheckbox = () => {
 
   container.append(checkbox, label);
 
-  return container; 
+  return container;
 };
-
 
 // ----------------- FILTRAGE -----------------
 export const applyFilters = () => {
@@ -202,7 +223,6 @@ export const applyFilters = () => {
     return matchesSearch && matchesPays && matchesCategory && matchesSector && matchesNew && matchesTradeshow;
   });
 
-  // Update URL pour le tradeshow sélectionné
   const url = new URL(window.location);
   url.searchParams.set('tradeshow', filters.tradeshow);
   window.history.replaceState({}, '', url);
@@ -210,7 +230,6 @@ export const applyFilters = () => {
   if (!STATE.filteredData.length) DOM.noResults.classList.remove('hidden');
   updatePagination();
 };
-
 
 // ----------------- PAGINATION -----------------
 export const updatePagination = () => {

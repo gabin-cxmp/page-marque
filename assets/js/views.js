@@ -5,6 +5,23 @@ import { normalizeStr, getUrlParam, updatePagination } from './utils.js';
 import { generateAllFilters } from './utils.js';
 import { applyFilters } from './utils.js';
 
+
+const tradeshowList = document.getElementById('tradeshow-buttons_wrapper');
+
+function checkSticky() {
+  const stickyTop = tradeshowList.getBoundingClientRect().top + window.scrollY; 
+  console.log(stickyTop);
+  if (window.scrollY + 32 >= stickyTop) {
+    tradeshowList.classList.add('active');
+  } else {
+    tradeshowList.classList.remove('active');
+  }
+}
+
+window.addEventListener('scroll', checkSticky);
+window.addEventListener('resize', checkSticky); 
+
+
 export const initializeAllFilters = () => {
   const filtersContainer = document.getElementById('dynamic-filters-container');
   if (filtersContainer) {
@@ -26,7 +43,7 @@ export const initializeAllFilters = () => {
 };
 
 export const createExhibitorCard = (item) => {
-  const container = document.createElement('div');
+  const container = document.createElement('a');
   container.className = 'card';
   container.href = `?supplier-name=${encodeURIComponent(item['Supplier Name'])}`;
 
@@ -37,29 +54,41 @@ export const createExhibitorCard = (item) => {
   title.className = 'card-title';
   title.textContent = item['Supplier Name'].toUpperCase();
 
+  const countryAndCategory = document.createElement('div');
+  countryAndCategory.classList.add('country-and-category');
+
   const country = document.createElement('p');
-  country.classList.add('card-country');
   country.textContent = item['Supplier Country'];
 
-  const focusAndCategory = document.createElement('div');
-  focusAndCategory.classList.add('focus-and-category');
-
-  const focus = document.createElement('p');
-  focus.textContent = item['Focus'];
+  const horizontalSeparator = document.createElement('div');
+  horizontalSeparator.classList.add('horizontal-separator');
 
   const category = document.createElement('p');
-  category.textContent = item['Main Product Category'];
+  category.textContent = item['Category'];
 
-  const span = document.createElement('span');
-  span.textContent = focus.textContent != '' && category.textContent != '' ? '>' : '';
+  countryAndCategory.append(country, horizontalSeparator, category)
 
-  focusAndCategory.append(focus, span, category)
+  const tradeshowAndBooth = document.createElement('div');
+  tradeshowAndBooth.classList.add('tradeshow-booth_wrapper');
+
+  const tradeshow = document.createElement('p');
+  tradeshow.textContent = item['Tradeshow'];
+
+  const booth = document.createElement('span');
+  booth.classList.add('booth-number');
+  booth.textContent = item['Booth'];
+
+  tradeshowAndBooth.append(tradeshow, !booth.textContent ? '' : booth);
+
+  const buttonsWrapper = document.createElement('div');
+  buttonsWrapper.classList.add('card-buttons_wrapper');
 
   const seeMore = document.createElement('a');
-  seeMore.classList.add('card-see-more');
+  seeMore.classList.add('card-buttons');
 
-  const plusIcon = document.createElement('img');
-  plusIcon.setAttribute("src", "assets/img/chevron-right.svg");
+  const plusIcon = document.createElement('p');
+  plusIcon.textContent = '+';
+  
 
   seeMore.addEventListener('click', (e) => {
     e.preventDefault();
@@ -67,10 +96,29 @@ export const createExhibitorCard = (item) => {
     renderMicroView();
   });
 
-  contentContainer.append(title, country, focusAndCategory);
   seeMore.append(plusIcon);
 
-  container.append(contentContainer, seeMore);
+   container.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.history.pushState({}, '', container.href);
+    renderMicroView();
+  });
+
+  const goToAks = document.createElement('a');
+  goToAks.classList.add('card-buttons', 'black');
+  goToAks.target = "_blank"
+  goToAks.href = item['AKS Link'];
+
+  const cartIcon = document.createElement('img');
+  cartIcon.src = "/assets/img/shopping-cart.svg";
+
+  goToAks.append(cartIcon);
+
+  contentContainer.append(title, countryAndCategory, tradeshowAndBooth);
+
+  buttonsWrapper.append(seeMore, goToAks.href.includes('ankorstore') ? goToAks : '');
+
+  container.append(contentContainer, buttonsWrapper);
   return container;
 };
 
@@ -108,26 +156,60 @@ export const renderExhibitorsList = (data) => {
 export const renderPagination = (totalItems, currentPage) => {
   DOM.paginationButtonsWrapper.innerHTML = '';
   const totalPages = Math.ceil(totalItems / CONFIG.itemsPerPage);
-
   if (totalPages <= 1) return;
 
-  const createButton = (text, disabled, onClick, active = false, className = 'secondary-button') => {
+  const backSVG = `<svg width="16" height="16" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.8786 18.961L9.8786 12.961L15.8786 6.96102" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+  const nextSVG = `<svg width="16" height="16" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.11835 17.9971L15.1183 11.9971L9.11835 5.99707" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+  const createNavButton = (text, svgContent, imgFirst = false, disabled, onClick) => {
     const btn = document.createElement('button');
-    btn.textContent = text;
+    btn.classList.add('secondary-button');
     if (disabled) btn.disabled = true;
-    if (active) btn.classList.add('active');
-    if (className) btn.classList.add(className);
+
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.gap = '6px';
+    wrapper.style.justifyContent = 'center';
+
+    const createSVGElement = (svgString) => {
+      const template = document.createElement('template');
+      template.innerHTML = svgString.trim();
+      const svgNode = template.content.firstChild;
+      svgNode.style.flexShrink = '0';
+      return svgNode;
+    };
+
+    if (svgContent && imgFirst) wrapper.appendChild(createSVGElement(svgContent));
+
+    const span = document.createElement('span');
+    span.textContent = text;
+    wrapper.appendChild(span);
+
+    if (svgContent && !imgFirst) wrapper.appendChild(createSVGElement(svgContent));
+
+    btn.appendChild(wrapper);
     btn.addEventListener('click', onClick);
     return btn;
   };
 
   DOM.paginationButtonsWrapper.appendChild(
-    createButton('Back', currentPage === 1, () => {
-      if (currentPage > 1) {
-        STATE.currentPage--;
-        updatePagination();
+    createNavButton(
+      'Back',
+      backSVG,
+      true,
+      currentPage === 1,
+      () => {
+        if (currentPage > 1) {
+          STATE.currentPage--;
+          updatePagination();
+        }
       }
-    })
+    )
   );
 
   const numberButtonsContainer = document.createElement('div');
@@ -136,35 +218,39 @@ export const renderPagination = (totalItems, currentPage) => {
   const maxVisiblePages = window.matchMedia("(width <= 500px)").matches === false ? 5 : 3;
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
   let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
 
+  const createNumberButton = (text, disabled, onClick, active = false) => {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.classList.add('secondary-button');
+    if (disabled) btn.disabled = true;
+    if (active) btn.classList.add('active');
+    btn.addEventListener('click', onClick);
+    return btn;
+  };
+
   if (startPage > 1) {
-    numberButtonsContainer.appendChild(createButton('1', false, () => {
-      STATE.currentPage = 1;
-      updatePagination();
-    }));
+    numberButtonsContainer.appendChild(createNumberButton('1', false, () => { STATE.currentPage = 1; updatePagination(); }));
     if (startPage > 2) {
-      numberButtonsContainer.appendChild(createButton('...', true, () => {}));
+      numberButtonsContainer.appendChild(createNumberButton('...', true, () => {}));
     }
   }
 
   for (let i = startPage; i <= endPage; i++) {
-    numberButtonsContainer.appendChild(
-      createButton(i, false, () => {
-        STATE.currentPage = i;
-        updatePagination();
-      }, i === currentPage)
-    );
+    numberButtonsContainer.appendChild(createNumberButton(i, false, () => {
+      STATE.currentPage = i;
+      updatePagination();
+    }, i === currentPage));
   }
 
   if (endPage < totalPages) {
     if (endPage < totalPages - 1) {
-      numberButtonsContainer.appendChild(createButton('...', true, () => {}));
+      numberButtonsContainer.appendChild(createNumberButton('...', true, () => {}));
     }
-    numberButtonsContainer.appendChild(createButton(totalPages, false, () => {
+    numberButtonsContainer.appendChild(createNumberButton(totalPages, false, () => {
       STATE.currentPage = totalPages;
       updatePagination();
     }));
@@ -173,14 +259,21 @@ export const renderPagination = (totalItems, currentPage) => {
   DOM.paginationButtonsWrapper.appendChild(numberButtonsContainer);
 
   DOM.paginationButtonsWrapper.appendChild(
-    createButton('Next', currentPage === totalPages, () => {
-      if (currentPage < totalPages) {
-        STATE.currentPage++;
-        updatePagination();
+    createNavButton(
+      'Next',
+      nextSVG,
+      false, 
+      currentPage === totalPages,
+      () => {
+        if (currentPage < totalPages) {
+          STATE.currentPage++;
+          updatePagination();
+        }
       }
-    })
+    )
   );
 };
+
 
 export const renderMicroView = () => {
 
@@ -213,31 +306,16 @@ export const renderMicroView = () => {
 
   microview.classList.remove('hidden');
 
-  DOM.microviewContactButton.classList.add('hidden');
   DOM.microviewTitle.textContent = supplierData['Supplier Name'];
-  DOM.microviewStand.textContent = supplierData['Stand Number'];
-  if(DOM.microviewStand.textContent == ''){
-    DOM.microviewStand.parentElement.style.display = "none";
-  }
+  supplierData['Booth'] ? DOM.microviewStand.textContent = supplierData['Booth'] : DOM.microviewStand.style.display = "none";
   DOM.microviewCountry.textContent = supplierData['Supplier Country'];
-  DOM.microviewFocus.textContent = supplierData['Focus'];
-  DOM.microviewCategory.textContent = supplierData['Main Product Category'];
-  DOM.microviewSpan.textContent = DOM.microviewFocus.textContent != '' && DOM.microviewCategory.textContent != '' ?  '>' : '';
-
-  const products = getProductsForSupplier(supplierData['Supplier Name'], STATE.allData);
-
-  renderCertifications(supplierData, products);
-
-  renderMicroviewProductDetails(products);
-
-  if (supplierData['Email']) {
-   // DOM.microviewContactButton.classList.remove('hidden');
-  }
-
-  DOM.microviewContactButton.onclick = (e) => {
-    e.preventDefault();
-    window.location.href = `mailto:${supplierData['Email']}`;
-  };
+  DOM.microviewCategory.textContent = supplierData['Category'];
+  DOM.microviewSociete.textContent = supplierData['Corporate Name'];
+  DOM.microviewTradeshow.textContent = supplierData['Tradeshow'];
+  DOM.microviewDescription.textContent = supplierData['Description'];
+  supplierData['AKS Link'] ? DOM.microviewAsk.href = supplierData['AKS Link'] : DOM.microviewAsk.style.display = "none";
+  supplierData['Website'] ? DOM.microviewWebsite.href = supplierData['Website'] : DOM.microviewWebsite.style.display = "none";
+  supplierData['Instagram'] ? DOM.microviewInstagram.href = supplierData['Instagram'] : DOM.microviewInstagram.style.display = "none";
 
   DOM.goBackButton.onclick = () => {
     const cameFromInternalNav = document.referrer && document.referrer.includes(window.location.hostname);

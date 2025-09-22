@@ -10,7 +10,6 @@ import { initializeAllFilters, renderMicroView, hideMicroView } from './views.js
   STATE.allData = allData;
   STATE.exhibitorsOnly = exhibitorsOnly;
   STATE.filteredData = [...exhibitorsOnly];
-  console.log(STATE.allData);
   initializeAllFilters();
 
   const supplierParam = getUrlParam('supplier-name');

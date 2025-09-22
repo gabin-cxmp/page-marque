@@ -29,7 +29,7 @@
     <div class="title-wrapper">
       <h1>Liste de marques</h1>
     </div>
-    <div id="tradeshow-buttons_wrapper">
+      <div id="tradeshow-buttons_wrapper">
       <input type="radio" id="all" name="tradeshow" value="all" checked="true"/>
       <label for="all">Voir tout</label>
       <input type="radio" id="whos-next" name="tradeshow" value="Who's Next" />
@@ -44,41 +44,29 @@
       <label for="ifl-paris">Interfilière Paris</label>
       <input type="radio" id="sil-paris" name="tradeshow" value="Salon international de la lingerie" />
       <label for="sil-paris">Salon international de la lingerie</label>
-    </div>
-    <div class="filters-list_wrapper">
+      </div>
+    <section class="content-container">
       <!-- Filtres -->
-      <aside id="filters-container" aria-label="Filtres de recherche">
-        <div class="position-sticky">
-          <h2>Filters</h2>
-          <div id="loader" class="loader hidden" aria-live="polite" aria-busy="true" role="status"></div>
+      <div id="filters-container" aria-label="Filtres de recherche">
           <div id="dynamic-filters-container">
+            <div id="searchbar_wrapper" role="search">
+              <input id="searchInput" type="search" placeholder="Rechercher" autocomplete="off" />
+            </div>
             <!-- Tous les filtres seront générés dynamiquement ici -->
           </div>
+      </div>
+      <div>
+        <div id="loader" class="loader hidden" aria-live="polite" aria-busy="true" role="status"></div>
+        <div id="noResults" class="hidden" role="alert">
+          <p>Oops! We couldn't find any results matching your search.</p>
         </div>
-    </aside>
+        <div id="exhibitors-list" aria-live="polite" aria-atomic="true"></div>
+      </div>
 
-      <!-- Recherche & Liste -->
-      <section class="searchbar-list_wrapper">
-
-        <div id="searchbar_wrapper" role="search">
-          <input id="searchInput" type="search" placeholder="Find your supplier - try names or product types" autocomplete="off" />
-        </div>
-
-        <div>
-          <div id="loader" class="loader hidden" aria-live="polite" aria-busy="true" role="status"></div>
-          <div id="noResults" class="hidden" role="alert">
-            <p>Oops! We couldn't find any results matching your search.</p>
-          </div>
-          <div id="exhibitors-list" aria-live="polite" aria-atomic="true"></div>
-        </div>
-
-        <footer class="bottom-page_wrapper" aria-label="Navigation pagination et export">
+      <footer class="bottom-page_wrapper" aria-label="Navigation pagination et export">
           <div class="pagination-buttons_wrapper" role="navigation" aria-label="Pagination"></div>
-        </footer>
-
-      </section>
-
-    </div>
+      </footer>
+    </section>
   </main>
 
   <!-- PAGE DÉTAILLÉE D'UN EXPOSANT -->
@@ -92,54 +80,29 @@
     <div id="loader" class="loader hidden" aria-live="polite" aria-busy="true" role="status"></div>
     <div id="microview-main-content_wrapper" class="hidden">
       <div class="microview-header_wrapper">
-        <div>
-          <div class="focus-and-category-microview">
-          <p id="microview-focus"></p>
-          <span id="microview-span"></span>
           <p id="microview-category"></p>
-          </div>
           <h3 id="microview-title"></h3>
-          <div class="certifications_wrapper">
-            <p></p>
-            <ul id="certifications-list"></ul>
-          </div>
-        </div>
-        <a href="" id="microview-contact_button" class="primary-button hidden">Contact</a>
+          <p id="microview-stand" class="booth-number"></p>
       </div>
-      <div class="divider"></div>
       <div class="microview_specifications-wrapper">
         <div class="microview_details-wrapper">
-          <span>Stand</span>
-          <p id="microview-stand"></p>
+          <span>Societe</span>
+          <p id="microview-societe"></p>
         </div>
         <div class="microview_details-wrapper">
-          <span>Country</span>
+          <span>Pays</span>
           <p id="microview-country"></p>
         </div>
         <div class="microview_details-wrapper">
-          <span>Product Type</span>
-          <p id="microview-type"></p>
+          <span>Salon</span>
+          <p id="microview-tradeshow"></p>
         </div>
-        <div class="microview_details-wrapper">
-          <span>Production Volumes</span>
-          <p id="microview-volumes"></p>
-        </div>
-        <div class="microview_details-wrapper">
-          <span>Product Material (main)</span>
-          <p id="microview-material"></p>
-        </div>
-        <div class="microview_details-wrapper">
-          <span>Product Material (secondary)</span>
-          <p id="microview-material-secondary"></p>
-        </div>
-        <div class="microview_details-wrapper">
-          <span>Product Specification (if applicable)</span>
-          <p id="microview-specification"></p>
-        </div>
-        <div class="microview_details-wrapper">
-          <span>Product Finishing (if applicable)</span>
-          <p id="microview-finishing"></p>
-        </div>
+      </div>
+      <p id="microview_description"></p>
+      <div class="microview-buttons_wrapper">
+        <a href="" target="_blank" class="primary-button" id="microview-aks">Commander sur Ankorstore</a>
+        <a href="" target="_blank" class="secondary-button" id="microview-website">Website</a>
+        <a href="" target="_blank" class="secondary-button" id="microview-instagram">Instagram</a>
       </div>
     </div>
   </main> 
