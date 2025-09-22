@@ -109,7 +109,7 @@ export const createExhibitorCard = (item) => {
   goToAks.href = item['AKS Link'];
 
   const cartIcon = document.createElement('img');
-  cartIcon.src = "../assets/img/shopping-cart.svg";
+  cartIcon.src = "assets/img/shopping-cart.svg";
 
   goToAks.append(cartIcon);
 
