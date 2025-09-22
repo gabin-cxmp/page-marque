@@ -48,7 +48,7 @@ export const createDropdownFilter = (filterKey, config, options) => {
         'aria-expanded': 'false'
       }, [
         el('span', { class: 'selected-text' }, `${config.legend}`),
-        el('img', { class: 'dropdown-arrow', src: '/assets/img/chevron-down.svg' })
+        el('img', { class: 'dropdown-arrow', src: '../assets/img/chevron-down.svg' })
       ]),
       el('ul', { class: 'dropdown-options', role: 'listbox', style: 'display:none' }, [
         el('li', {
