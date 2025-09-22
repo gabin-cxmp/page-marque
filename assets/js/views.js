@@ -103,10 +103,13 @@ export const createExhibitorCard = (item) => {
     renderMicroView();
   });
 
-  const goToAks = document.createElement('a');
+  const goToAks = document.createElement('button');
   goToAks.classList.add('card-buttons', 'black');
-  goToAks.target = "_blank"
-  goToAks.href = item['AKS Link'];
+  goToAks.addEventListener('click', e => {
+  e.stopPropagation(); 
+  e.preventDefault();
+  window.open(item['AKS Link'], '_blank');
+  });
 
   const cartIcon = document.createElement('img');
   cartIcon.src = "assets/img/shopping-cart.svg";
@@ -115,7 +118,7 @@ export const createExhibitorCard = (item) => {
 
   contentContainer.append(title, countryAndCategory, tradeshowAndBooth);
 
-  buttonsWrapper.append(seeMore, goToAks.href.includes('ankorstore') ? goToAks : '');
+  buttonsWrapper.append(seeMore, !item['AKS Link'] ? '' : goToAks);
 
   container.append(contentContainer, buttonsWrapper);
   return container;
