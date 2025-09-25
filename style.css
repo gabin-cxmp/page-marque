@@ -238,7 +238,7 @@ legend{
 
 #reinitialize-export_wrapper{
   display: flex;
-  justify-content: center;
+  justify-content: left;
   gap: 24px;
   margin-top: 24px;
   opacity: 1;
@@ -736,6 +736,10 @@ footer {
     gap: 16px;
   }
 
+  #reinitialize-export_wrapper{
+    flex-wrap: wrap;
+    gap: 16px;
+  }
   .checkbox-container{
     justify-content: flex-start;
   }
