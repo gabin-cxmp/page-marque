@@ -12,6 +12,8 @@
   }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@0.0.4/dist/fontkit.umd.min.js" defer></script>
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,6 +55,10 @@
               <input id="searchInput" type="search" placeholder="Rechercher" autocomplete="off" />
             </div>
             <!-- Tous les filtres seront générés dynamiquement ici -->
+          </div>
+          <div id="reinitialize-export_wrapper" class="hidden">
+                <button class="secondary-button" id="reinitialize-button">Réinitialiser les filtres</button>
+                <button class="primary-button" id="export-button">Exporter les résultats en PDF</button>
           </div>
       </div>
       <div>

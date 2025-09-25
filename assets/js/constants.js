@@ -28,7 +28,9 @@ export const DOM = {
   microviewDescription: document.getElementById('microview_description'),
   microviewAsk : document.getElementById('microview-aks'),
   microviewWebsite : document.getElementById('microview-website'),
-  microviewInstagram : document.getElementById('microview-instagram')
+  microviewInstagram : document.getElementById('microview-instagram'),
+  reinitializeBtn : document.getElementById('reinitialize-button'),
+  exportBtn : document.getElementById('export-button')
 };
 
 

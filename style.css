@@ -97,7 +97,7 @@ ul, li {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 fieldset{
@@ -236,6 +236,16 @@ legend{
   gap: 32px;
 }
 
+#reinitialize-export_wrapper{
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 24px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 .pagination-buttons_wrapper {
   display: flex;
   justify-content: center;
@@ -265,6 +275,8 @@ legend{
   align-items: baseline;
   margin-top: 32px;
 }
+
+
 
 
 /* ===== NAVIGATION ===== */

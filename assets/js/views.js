@@ -27,17 +27,14 @@ export const initializeAllFilters = () => {
     generateAllFilters(filtersContainer);
   }
 
-  // Init radio buttons "tradeshow"
   DOM.radioButtons.forEach((btn) => {
     btn.addEventListener('change', applyFilters);
   });
 
-  // Vérifie si un query param est présent au chargement
   const paramValue = getUrlParam('tradeshow') || 'all';
   const radio = document.querySelector(`input[name="tradeshow"][value="${paramValue}"]`);
   if (radio) radio.checked = true;
 
-  // Applique les filtres dès le départ
   applyFilters();
 };
 

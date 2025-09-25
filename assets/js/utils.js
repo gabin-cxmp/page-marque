@@ -199,10 +199,45 @@ export const createNouveautesCheckbox = () => {
 };
 
 // ----------------- FILTRAGE -----------------
+
+export const updateFilterStatusDisplay = () => {
+
+  const filterStatusDiv = DOM.exportBtn.parentElement;
+  
+  if (!filterStatusDiv) return;
+
+  const hasActiveFilters = checkIfAnyFilterActive();
+  
+  if (hasActiveFilters) {
+    filterStatusDiv.classList.remove('hidden');
+  } else {
+    filterStatusDiv.classList.add('hidden');
+  }
+};
+
+export const checkIfAnyFilterActive = () => {
+  const dropdownFilters = ['pays', 'category', 'sector'];
+  const hasDropdownFilter = dropdownFilters.some(filterId => {
+    const select = document.getElementById(`${filterId}-select`);
+    return select && select.value !== '';
+  });
+
+  const nouveautesCheckbox = document.getElementById('nouveautes');
+  const hasNouveautesFilter = nouveautesCheckbox && nouveautesCheckbox.checked;
+
+  const searchInput = DOM.searchInput;
+  const hasSearchFilter = searchInput && searchInput.value.trim() !== '';
+
+  const tradeshowRadio = document.querySelector('input[name="tradeshow"]:checked');
+  const hasTradeshowFilter = tradeshowRadio && tradeshowRadio.value !== 'all';
+  
+
+  return hasDropdownFilter || hasNouveautesFilter || hasTradeshowFilter || hasSearchFilter;
+};
+
 export const applyFilters = () => {
   DOM.noResults.classList.add('hidden');
   STATE.currentPage = 1;
-
   const filters = {
     pays: document.getElementById('pays-select')?.value || '',
     category: document.getElementById('category-select')?.value || '',
@@ -212,13 +247,34 @@ export const applyFilters = () => {
     tradeshow: document.querySelector('input[name="tradeshow"]:checked')?.value || 'all'
   };
 
+  const isWithinLastWeek = (dateStr) => {
+    if (!dateStr) return false;
+    
+    try {
+      const [day, month, year] = dateStr.split('-').map(num => parseInt(num, 10));
+      const inscriptionDate = new Date(year, month - 1, day);
+      
+      const today = new Date()
+      
+      const oneWeekAgo = new Date(today);
+      oneWeekAgo.setDate(today.getDate() - 7);
+      
+      return inscriptionDate >= oneWeekAgo && inscriptionDate <= today;
+    } catch (error) {
+      return false;
+    }
+  };
+
   STATE.filteredData = STATE.exhibitorsOnly.filter((ex) => {
     const nameNorm = normalizeStr(ex['Supplier Name'] || '');
     const matchesSearch = !filters.search || nameNorm.includes(filters.search);
     const matchesPays = !filters.pays || ex['Supplier Country']?.trim() === filters.pays;
     const matchesCategory = !filters.category || ex['Category']?.trim() === filters.category;
     const matchesSector = !filters.sector || ex['Supplier Sector']?.trim() === filters.sector;
-    const matchesNew = !filters.nouveautes || (ex['Is New'] || '').toString().toLowerCase() === 'true';
+    
+    // Nouveau filtre basé sur la date d'inscription
+    const matchesNew = !filters.nouveautes || isWithinLastWeek(ex['Registration date'] || '');
+    
     const matchesTradeshow = filters.tradeshow === 'all' || ex['Tradeshow']?.trim() === filters.tradeshow;
     return matchesSearch && matchesPays && matchesCategory && matchesSector && matchesNew && matchesTradeshow;
   });
@@ -226,9 +282,39 @@ export const applyFilters = () => {
   const url = new URL(window.location);
   url.searchParams.set('tradeshow', filters.tradeshow);
   window.history.replaceState({}, '', url);
-
   if (!STATE.filteredData.length) DOM.noResults.classList.remove('hidden');
+  updateFilterStatusDisplay();
   updatePagination();
+};
+
+export const clearAllFilters = () => {
+  document.querySelectorAll('.custom-dropdown_container').forEach(container => {
+    const hiddenInput = container.querySelector('input[type="hidden"]');
+    const selectedText = container.querySelector('.selected-text');
+    const options = container.querySelectorAll('.dropdown-option');
+    
+    if (hiddenInput) hiddenInput.value = '';
+    if (selectedText) {
+      const firstOption = container.querySelector('.dropdown-option[data-value=""]');
+      if (firstOption) selectedText.textContent = firstOption.textContent;
+      selectedText.classList.remove('has-value');
+    }
+    
+    options.forEach(opt => {
+      opt.classList.remove('selected');
+      if (opt.dataset.value === '') opt.classList.add('selected');
+    });
+  });
+
+  const nouveautesCheckbox = document.getElementById('nouveautes');
+  if (nouveautesCheckbox) nouveautesCheckbox.checked = false;
+
+  if (DOM.searchInput) DOM.searchInput.value = '';
+
+  const allRadio = document.querySelector('input[name="tradeshow"][value="all"]');
+  if (allRadio) allRadio.checked = true;
+
+  applyFilters();
 };
 
 // ----------------- PAGINATION -----------------
